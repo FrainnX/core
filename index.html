@@ -1,481 +1,1425 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>kyoko.nn // bio core</title>
+<title>Kyoko City // Core Interface</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
-/* --- BASE & CYBER ENVIRONMENT --- */
-*{
+/* --- GENERAL ENVIRONMENT --- */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body{
-    background:
-    linear-gradient(rgba(0, 0, 0, 0.90), rgba(0, 0, 0, 0.90)),
-    url("https://community.steamstatic.com/economy/image/a0b44yVZG6xneuQqGEgxNyzAxlmouy8Ipo0bUlJjRDfF9dQS1eD3AHU-t8xnioHyGdqSZpgsmMIM6FMBcQKdVqohuARmjx8NnHONY8y5FqaW_Tut-YpXEfDYsreg38Ky_HBQi5NxO48cccut4_1icZRE4g");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    min-height: 100vh;
+body {
+    background: #000000;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    font-family: 'Consolas', 'Courier New', monospace;
-    color: #00bb9c;
-    padding: 40px 20px;
+    align-items: center;
+    font-family: 'Share Tech Mono', 'Consolas', monospace;
+    overflow: hidden;
+    position: relative;
 }
 
-/* --- CRT SCANLINE EFFECT --- */
-body::before {
+/* Global CRT Monitor Overlay (Scanlines) */
+body::after {
     content: " ";
     display: block;
-    position: fixed;
+    position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
-    z-index: 99999;
-    background-size: 100% 4px, 6px 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.18) 50%);
+    z-index: 9999;
+    background-size: 100% 4px;
     pointer-events: none;
 }
 
-.bio-container {
-    width: 100%;
-    max-width: 450px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+/* --- PHYSICAL GLITCH PARTICLES --- */
+.glitch-particle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 95;
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: bold;
 }
 
-/* --- HEADER PERFIL --- */
-.profile-header {
-    text-align: center;
+/* --- INTRO: LOADING BAR --- */
+.boot-screen {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000000;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader-container {
+    width: 320px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 5px;
+    gap: 12px;
 }
 
-.avatar-wrapper {
-    position: relative;
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
-    border: 2px solid #de007a;
-    box-shadow: 0 0 15px rgba(222, 0, 122, 0.5);
-    padding: 4px;
-    background: rgba(0,0,0,0.6);
-}
-
-.avatar-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.username {
-    font-size: 1.25rem;
-    font-weight: bold;
+.loader-status {
     color: #00bb9c;
-    text-shadow: 0 0 8px rgba(0, 187, 156, 0.5);
-    letter-spacing: 2px;
+    font-size: 0.9rem;
+    letter-spacing: 3px;
 }
 
-/* --- INTRO TERMINAL --- */
-.intro-terminal {
-    background: rgba(3, 8, 8, 0.85);
-    border: 1px solid rgba(0, 187, 156, 0.2);
-    border-radius: 4px;
-    padding: 14px 18px;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    box-shadow: inset 0 0 15px rgba(0, 187, 156, 0.05);
-}
-
-/* --- PILA DE ENLACES CON SUPERPOSICIÓN --- */
-.links-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    position: relative;
-}
-
-/* DISEÑO CYBERPUNK HUD CON SUBTEXTOS */
-.hud-btn {
+.loader-bar-bg {
     width: 100%;
-    padding: 14px 20px;
-    background: rgba(0, 14, 11, 0.6);
-    border: 1px solid rgba(0, 187, 156, 0.3);
-    border-left: 4px solid #00bb9c;
-    color: #00bb9c;
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    box-shadow: inset 0 0 10px rgba(0, 187, 156, 0.05);
-    transition: all 0.2s ease-out;
-}
-
-/* Pequeña etiqueta técnica de superposición */
-.hud-btn::before {
-    content: "SYS_SRC // LN_";
-    position: absolute;
-    top: 4px;
-    right: 8px;
-    font-size: 0.55rem;
-    color: rgba(0, 187, 156, 0.35);
-    font-weight: normal;
-}
-
-.btn-subtext {
-    font-size: 0.65rem;
-    color: rgba(0, 187, 156, 0.5);
-    font-weight: normal;
-    letter-spacing: 1px;
-}
-
-/* Efectos Hover Generales */
-.hud-btn:hover:not(.hacked-link):not(.copied-state) {
+    height: 6px;
     background: rgba(0, 187, 156, 0.1);
-    border-color: #00bb9c;
-    box-shadow: 0 0 15px rgba(0, 187, 156, 0.25), inset 0 0 10px rgba(0, 187, 156, 0.1);
-    transform: translateX(4px);
+    border: 1px solid rgba(0, 187, 156, 0.3);
 }
 
-/* Spotify Custom */
-.spotify-btn {
-    border-color: rgba(0, 255, 102, 0.3);
-    border-left: 4px solid #00ff66;
-    color: #00ff66;
-}
-.spotify-btn .btn-subtext { color: rgba(0, 255, 102, 0.5); }
-.spotify-btn::before { color: rgba(0, 255, 102, 0.3); content: "SYS_SRC // AUD_"; }
-.spotify-btn:hover {
-    background: rgba(0, 255, 102, 0.08);
-    border-color: #00ff66;
-    box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
-    transform: translateX(4px);
-}
-
-/* Discord Custom */
-.discord-btn { border-left-color: #00bb9c; }
-.discord-btn.copied-state {
-    background: rgba(0, 255, 102, 0.1) !important;
-    color: #00ff66 !important;
-    border-color: #00ff66 !important;
-    border-left-color: #00ff66 !important;
-    box-shadow: 0 0 12px rgba(0, 255, 102, 0.2) !important;
-}
-.discord-btn.copied-state .btn-subtext { color: #00ff66 !important; }
-
-/* --- HUD BARRA DE CARGA --- */
-.hud-bar-wrapper {
-    width: 100%;
-    padding: 8px 4px;
-    transition: all 0.4s ease;
-}
-
-/* Animación de hackeo/glitch para desaparecer */
-.hud-bar-wrapper.glitch-fadeout {
-    animation: glitch-destroy 0.35s steps(2) forwards;
-    pointer-events: none;
-}
-
-.hud-bar-label {
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    margin-bottom: 6px;
-    font-weight: bold;
-}
-.hud-bar-container {
-    border: 1px solid rgba(0, 187, 156, 0.4);
-    padding: 2px;
-    height: 16px;
-    background: rgba(0, 12, 10, 0.6);
-}
-.hud-bar-fill {
+.loader-bar-fill {
     height: 100%;
     width: 0%;
     background: #00bb9c;
-    box-shadow: 0 0 8px #00bb9c;
-    transition: width 0.06s linear;
+    box-shadow: 0 0 10px #00bb9c;
+    transition: width 0.04s linear;
 }
 
-/* --- AMBIENT CORRUPTED LINKS (Instagram & Twitch) --- */
-.hacked-link {
-    color: #ff003c !important;
-    border-color: rgba(255, 0, 60, 0.3);
-    border-left: 4px solid #ff003c;
-    text-shadow: 0 0 4px rgba(255, 0, 60, 0.3);
-    animation: soft-shake 0.4s infinite alternate;
+/* --- HUD INTERFACE --- */
+.stream-frame {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: #040511;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    
+    --glitch-x: 0deg;
+    --glitch-br: 1;
+    --border-color: #00bb9c;
+    --shadow-color: rgba(0, 187, 156, 0.2);
+    
+    opacity: 0;
+    border: 4px solid var(--border-color);
+    box-shadow: inset 0 0 25px var(--shadow-color);
+    filter: brightness(var(--glitch-br));
+    
+    transform: skewX(var(--glitch-x)) scale(0.98);
+    clip-path: polygon(0 0, 88% 0, 91% 15px, 95% 15px, 96% 0, 100% 0, 100% 88%, 98% 91%, 98% 100%, 0 100%);
 }
-.hacked-link .btn-subtext { color: rgba(255, 0, 60, 0.5); }
-.hacked-link::before { color: rgba(255, 0, 60, 0.3); content: "SYS_ERR // WRN_"; }
 
-.hacked-link:hover {
-    background: rgba(255, 0, 60, 0.08) !important;
-    border-color: #ff003c !important;
-    box-shadow: 0 0 15px rgba(255, 0, 60, 0.3) !important;
-    transform: translateX(4px);
+.stream-frame.pc-active {
+    animation: pc-boot-turn-on 0.4s ease-out forwards;
 }
 
-/* --- ARCHIVO LOCAL EXTRA --- */
-.cyber-folder-item {
+.city-backdrop {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: 
+        radial-gradient(circle at 15% 35%, rgba(222, 0, 122, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(0, 187, 156, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(4, 5, 17, 0.2) 0%, #03030c 100%);
+    z-index: 1;
+}
+
+/* --- HUD HEADER --- */
+.hud-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 25px 35px 0 35px;
+    z-index: 10;
+}
+
+.stream-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: rgba(4, 5, 17, 0.85);
+    border-left: 4px solid #ffcc00;
+    padding-left: 14px;
+    max-width: 320px;
+}
+
+.meta-title { font-size: 0.65rem; font-weight: bold; letter-spacing: 2px; color: #ffcc00; }
+.meta-news-feed { font-size: 0.78rem; color: #e0e0e6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.gameplay-badge { 
+    background: transparent; 
+    color: #de007a; 
+    padding: 8px 0; 
+    font-size: 1.1rem; 
+    font-weight: 900; 
+    letter-spacing: 4px; 
+    text-shadow: 0 0 4px rgba(222, 0, 122, 0.6), 0 0 10px rgba(222, 0, 122, 0.4);
+    animation: neon-flicker-fast 2.5s infinite;
+}
+
+/* --- CENTRAL WINDOW AREA --- */
+.main-content-area {
+    width: 100%;
+    max-width: 440px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.cyber-window-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    filter: drop-shadow(0 0 15px rgba(0, 187, 156, 0.15));
+    position: relative; 
+}
+
+.cyber-window-tab {
+    height: 32px;
+    width: 60%;
+    background: #00bb9c;
+    color: #040511;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    position: relative;
+    clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%);
+}
+
+.window-controls {
+    display: flex;
+    gap: 6px;
+    margin-right: 15px;
+}
+
+.window-dot {
+    width: 6px;
+    height: 6px;
+    background: #040511;
+    border-radius: 50%;
+    opacity: 0.7;
+}
+
+.cyber-window-body {
+    background: rgba(4, 5, 17, 0.9);
+    border: 2px solid #00bb9c;
+    border-top: 4px solid #00bb9c;
+    padding: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+}
+
+.cyber-window-body::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background: #00bb9c;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+/* --- SQUAD DOCK CONTAINER --- */
+.squad-dock-container {
+    position: absolute;
+    top: 32px; 
+    left: 100%; 
+    display: flex; 
+    flex-direction: row-reverse; 
+    align-items: flex-start;
+    z-index: 99;
+}
+
+/* RIGHT VERTICAL TAB PULLER */
+.squad-vertical-tab {
+    background: #00bb9c;          
+    color: #040511;               
+    border: 1px solid #00bb9c;
+    border-left: none;
+    padding: 18px 7px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 3px 0 10px rgba(0, 187, 156, 0.1);
+    clip-path: polygon(0 0, 100% 10px, 100% calc(100% - 10px), 0 100%);
+    margin-left: -1px; 
+    position: relative;
+    z-index: 2;
+}
+
+.squad-vertical-tab:hover,
+.squad-vertical-tab.tab-active {
+    background: #de007a;
+    color: #ffffff;
+    border-color: #de007a;
+    box-shadow: 5px 0 15px rgba(222, 0, 122, 0.4);
+}
+
+/* SLIDE OUT CONTACTS PANEL */
+.cyberpunk-contacts-panel {
+    width: 0;
+    height: auto;
+    overflow: hidden;
+    background: rgba(2, 1, 6, 0.98);
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+}
+
+.squad-dock-container.panel-expanded .cyberpunk-contacts-panel {
+    width: 220px;
+    border: 1px solid #de007a;
+    box-shadow: 0 0 20px rgba(222, 0, 122, 0.25);
+}
+
+/* --- OVERLAY LOADER WITH ANALOG EFFECTS --- */
+.squad-calling-overlay {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%; 
+    background-color: rgba(6, 7, 20, 0.98);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    overflow: hidden;
+}
+
+.squad-calling-overlay::after {
+    content: " ";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(
+        rgba(255, 255, 255, 0.07) 0px, 
+        rgba(130, 130, 130, 0.12) 1px, 
+        transparent 2px, 
+        transparent 3px
+    );
+    background-size: 100% 3px;
+    animation: micro-analog-jitter 3.5s infinite step-end;
+}
+
+.analog-signal-noise {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(
+        transparent 10%,
+        rgba(255, 255, 255, 0.05) 13%,
+        rgba(150, 150, 150, 0.15) 15%,
+        rgba(255, 255, 255, 0.05) 17%,
+        transparent 20%,
+        transparent 65%,
+        rgba(255, 255, 255, 0.08) 68%,
+        transparent 72%
+    );
+    background-size: 100% 200%;
+    animation: rolling-shutter 6s infinite linear;
+}
+
+.cyberpunk-contacts-panel.is-calling .squad-calling-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.pixel-msg-icon,
+.calling-text {
+    position: relative;
+    z-index: 4;
+}
+
+/* --- YELLOW PIXEL ART CHAT ICON --- */
+.pixel-msg-icon {
+    width: 24px;
+    height: 18px;
+    color: #ffcc00;
+}
+
+.pixel-msg-icon::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px; height: 2px;
+    box-shadow:
+        /* Row 1 */
+        4px 0 currentColor, 6px 0 currentColor, 8px 0 currentColor, 10px 0 currentColor, 12px 0 currentColor, 14px 0 currentColor, 16px 0 currentColor, 18px 0 currentColor,
+        /* Row 2 */
+        2px 2px currentColor, 4px 2px #ffcc00, 6px 2px #ffcc00, 8px 2px #ffcc00, 10px 2px #ffcc00, 12px 2px #ffcc00, 14px 2px #ffcc00, 16px 2px #ffcc00, 18px 2px #ffcc00, 20px 2px currentColor,
+        /* Mid Section */
+        2px 4px currentColor, 4px 4px #ffcc00, 18px 4px #ffcc00, 20px 4px currentColor,
+        2px 6px currentColor, 4px 6px #ffcc00, 18px 6px #ffcc00, 20px 6px currentColor,
+        2px 8px currentColor, 4px 8px #ffcc00, 18px 8px #ffcc00, 20px 8px currentColor,
+        /* Row 7 */
+        2px 10px currentColor, 4px 10px #ffcc00, 6px 10px #ffcc00, 8px 10px #ffcc00, 10px 10px #ffcc00, 12px 10px #ffcc00, 14px 10px #ffcc00, 16px 10px #ffcc00, 18px 10px #ffcc00, 20px 10px currentColor,
+        /* Row 8 */
+        4px 12px currentColor, 6px 12px currentColor, 8px 12px currentColor, 10px 12px #ffcc00, 14px 12px currentColor, 16px 12px currentColor, 18px 12px currentColor,
+        /* Bubble Tail */
+        10px 14px currentColor, 12px 14px #ffcc00, 14px 14px currentColor,
+        /* Row 10 */
+        12px 16px currentColor;
+}
+
+.calling-text {
+    color: #ffcc00;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-align: center;
+    text-transform: uppercase;
+    animation: text-chromatic-pulse 1.5s infinite alternate steps(2);
+}
+
+.cyberpunk-contacts-panel .panel-tag {
+    font-size: 0.7rem;
+    color: #ffffff;
+    background: #de007a;
+    padding: 8px 10px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+    z-index: 6;
+}
+
+/* Contacts List */
+.contacts-list {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 200px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.cyberpunk-contacts-panel.load-complete .contacts-list {
+    opacity: 1;
+}
+
+.contact-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(222, 0, 122, 0.03);
+    padding: 10px 8px;
+    border: 1px solid rgba(222, 0, 122, 0.15);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* ROUNDED AVATARS FOR CONTACTS */
+.contact-avatar-wrapper {
+    position: relative;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 10px;
-    border: 1px dashed rgba(0, 187, 156, 0.2);
-    background: rgba(0, 8, 6, 0.3);
-    font-size: 0.8rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(222, 0, 122, 0.4);
+    background: rgba(222, 0, 122, 0.1);
+    border-radius: 50%;
+}
+
+.contact-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.95;
+    border-radius: 50%;
+}
+
+.contact-info { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.contact-name { font-size: 0.95rem; color: #e0e0e6; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase; }
+.contact-status { font-size: 0.65rem; color: #de007a; letter-spacing: 1px; margin-top: 1px; text-transform: lowercase; }
+
+/* --- PROFILE CENTRAL MENU --- */
+.profile-node {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    background: rgba(0, 187, 156, 0.05);
+    padding: 15px;
+    border: 1px solid rgba(0, 187, 156, 0.2);
+    width: 100%;
+    height: 126px;
+}
+
+.avatar-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.avatar-frame {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid #de007a;
+    padding: 2px;
+    background: #040511;
+}
+.avatar-frame img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+/* BPM Recuadro Pequeño */
+.bpm-display-box {
+    background: rgba(4, 5, 17, 0.9);
+    border: 1px solid #00bb9c;
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    color: #00bb9c;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-align: center;
+    min-width: 55px;
+    box-shadow: 0 0 5px rgba(0, 187, 156, 0.2);
+    transition: border-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.profile-info { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2px;
+}
+.profile-name { font-size: 1.3rem; font-weight: bold; color: #e0e0e6; letter-spacing: 2px; line-height: 1.1; }
+.profile-status { font-size: 0.65rem; color: #de007a; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Contenedor del ritmo cardíaco con máscara de desvanecimiento hacia la izquierda */
+.ecg-container {
+    flex-grow: 1;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(to left, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+}
+.ecg-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* MINI CUADRO DE TEXTO PARPADEANTE CRÍTICO */
+.critical-alert-box {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: rgba(255, 0, 60, 0.2);
+    border: 1px solid #ff003c;
+    color: #ff003c;
+    font-size: 0.55rem;
+    font-weight: bold;
+    padding: 1px 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 0 8px rgba(255, 0, 60, 0.4);
+    z-index: 15;
+}
+.critical-alert-box.active {
+    animation: critical-blink 0.5s infinite alternate steps(2);
+}
+
+@keyframes critical-blink {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* --- HIGH-TECH CYBERPUNK HUD BUTTONS --- */
+.networks-menu { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 16px; 
+}
+
+.hud-btn {
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(10, 14, 30, 0.95) 0%, rgba(5, 7, 18, 0.98) 100%);
+    border: 1px solid rgba(0, 187, 156, 0.3);
+    color: #e0e0e6;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 0 24px;
     cursor: pointer;
     user-select: none;
-    transition: all 0.2s;
-}
-.cyber-folder-item.selected {
-    background: rgba(0, 187, 156, 0.1);
-    border-style: solid;
-    border-color: #00bb9c;
-}
-
-/* --- PARTÍCULAS --- */
-.glitch-particle {
-    position: fixed; pointer-events: none; color: #ff003c; font-family: monospace;
-    font-weight: bold; z-index: 10000; white-space: nowrap; opacity: 1;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+    box-shadow: inset 0 0 12px rgba(0, 187, 156, 0.05), 0 3px 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* --- UTILS --- */
-.pink { color: #de007a; text-shadow: 0 0 8px #de007a; }
-.yellow { color: #ffcc00; text-shadow: 0 0 8px #ffcc00; }
-.green { color: #00ff66; text-shadow: 0 0 8px #00ff66; }
-.cursor { animation: cursor-blink .8s infinite; }
-
-/* --- ANIMACIONES --- */
-@keyframes cursor-blink { 50% { opacity: 0; } }
-@keyframes soft-shake {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(1px); }
+.hud-btn::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    background-color: currentColor;
+    z-index: 5;
+    transition: all 0.25s ease;
 }
 
-@keyframes glitch-destroy {
-    0% { transform: scaleY(1) skewX(0deg); opacity: 1; }
-    30% { transform: scaleY(0.4) skewX(20deg); opacity: 0.8; background: #ff003c; color: #000; }
-    60% { transform: scaleY(1.2) skewX(-10deg); opacity: 0.4; }
-    90% { transform: scaleY(0.02); opacity: 0.1; }
-    100% { transform: scaleY(0); opacity: 0; height: 0; padding: 0; margin: 0; }
+.hud-btn::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+    clip-path: inherit;
+    z-index: 2;
+    transition: all 0.25s ease;
+}
+
+.btn-glow-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(270deg, currentColor 0%, rgba(255, 255, 255, 0) 35%);
+    opacity: 0.15;
+    transition: opacity 0.25s ease, background 0.25s ease;
+}
+
+.secure-link:hover .btn-glow-container {
+    opacity: 0.35;
+}
+
+.btn-core-data {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 3;
+    position: relative;
+}
+
+.hud-btn .btn-sub { 
+    font-size: 0.55rem; 
+    letter-spacing: 3px;
+    opacity: 0.5;
+    margin-top: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 1px 5px;
+    border-radius: 2px;
+    transition: all 0.2s ease; 
+}
+
+.corner-bracket {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border: 1px solid currentColor;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 3;
+}
+.bracket-tl { top: 8px; left: 12px; border-right: none; border-bottom: none; }
+.bracket-br { bottom: 8px; right: 12px; border-left: none; border-top: none; }
+
+.tech-meta-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.barcode-decoration {
+    width: 32px;
+    height: 10px;
+    background: repeating-linear-gradient(90deg, currentColor, currentColor 2px, transparent 2px, transparent 5px);
+    opacity: 0.25;
+    transition: opacity 0.2s;
+}
+
+.tech-bar {
+    width: 14px;
+    height: 2px;
+    background-color: currentColor;
+    opacity: 0.4;
+}
+
+.hud-btn-scanner {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    transform: skewX(-30deg);
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* --- INTERACTIVE STATS --- */
+.secure-link:hover { 
+    background: linear-gradient(135deg, rgba(20, 26, 50, 0.98) 0%, rgba(10, 14, 32, 1) 100%);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02), 0 0 15px rgba(0, 187, 156, 0.15);
+}
+
+.secure-link:hover::before {
+    width: 8px;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+.secure-link:hover::after {
+    border-color: currentColor;
+    opacity: 0.25;
+}
+
+.secure-link:hover .btn-sub {
+    opacity: 0.9;
+    color: #000000;
+    background-color: #ffffff;
+    text-shadow: none;
+}
+
+.secure-link:hover .barcode-decoration {
+    opacity: 0.7;
+    animation: text-glitch-subtle 0.3s infinite steps(2);
+}
+
+.secure-link:hover .corner-bracket {
+    opacity: 0.9;
+    scale: 1.1;
+}
+
+.secure-link:hover .hud-btn-scanner {
+    animation: tech-scan-swipe 0.75s ease-out forwards;
+}
+
+/* --- PROTOCOL STYLING OVERRIDES --- */
+.spotify-btn { color: #00ff66; border-color: rgba(0, 255, 102, 0.3); }
+.spotify-btn:hover { color: #1ed760; text-shadow: 0 0 8px rgba(30, 215, 96, 0.4); border-color: #1ed760; }
+
+.spotify-btn.fetching-state {
+    color: #ffcc00 !important;
+    background: rgba(255, 204, 0, 0.05) !important;
+    border-color: #ffcc00 !important;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.2) !important;
+}
+.spotify-btn.fetching-state::before { background-color: #ffcc00 !important; width: 6px !important; }
+.spotify-btn.fetching-state .btn-core-data span:first-child { display: none; }
+.spotify-btn.fetching-state .btn-core-data::after {
+    content: "FETCHING DATA...";
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #ffcc00;
+    animation: text-glitch-subtle 0.4s infinite steps(1);
+}
+.spotify-btn.fetching-state .btn-sub { display: none; }
+.spotify-btn.fetching-state .barcode-decoration { background: #ffcc00; animation: neon-flicker-fast 0.5s infinite; }
+
+.discord-btn { color: #5865F2; border-color: rgba(88, 101, 242, 0.3); }
+.discord-btn:hover { color: #7289da; text-shadow: 0 0 8px rgba(114, 137, 218, 0.4); border-color: #7289da; }
+
+.discord-btn.copied-state {
+    color: #ffcc00 !important;
+    background: rgba(255, 204, 0, 0.05) !important;
+    border-color: #ffcc00 !important;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.2) !important;
+}
+.discord-btn.copied-state::before { background-color: #ffcc00 !important; width: 6px !important; width: 6px !important; }
+.discord-btn.copied-state .btn-core-data span:first-child { display: none; }
+
+.discord-btn.copied-state .btn-core-data::after {
+    content: "COPY SUCCESSFUL";
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #ffcc00;
+    animation: text-glitch-subtle 0.4s infinite steps(1);
+}
+.discord-btn.copied-state .btn-sub { display: none; }
+.discord-btn.copied-state .barcode-decoration { background: #ffcc00; animation: neon-flicker-fast 0.5s infinite; }
+
+.twitch-btn { color: #9146FF; border-color: rgba(145, 70, 255, 0.3); }
+.instagram-btn { color: #E1306C; border-color: rgba(225, 48, 108, 0.3); }
+
+.hacked-link:hover {
+    color: #ff003c !important; 
+    border-color: #ff003c !important; 
+    background: linear-gradient(135deg, rgba(40, 0, 10, 0.95) 0%, rgba(20, 0, 5, 1) 100%) !important;
+    text-shadow: 0 0 10px rgba(255, 0, 60, 0.6);
+    box-shadow: 0 0 20px rgba(255, 0, 60, 0.25), inset 0 0 10px rgba(255, 0, 60, 0.1);
+    animation: layout-glitch-subtle 0.22s infinite linear;
+}
+.hacked-link:hover::before { background-color: #ff003c !important; width: 8px !important; filter: drop-shadow(0 0 8px #ff003c); }
+.hacked-link:hover::after { border-color: #ff003c !important; opacity: 0.4; }
+.hacked-link:hover .btn-core-data span:first-child { animation: text-glitch-subtle 0.2s infinite steps(2); }
+.hacked-link:hover .btn-sub { display: none; }
+.hacked-link:hover .btn-core-data::after { 
+    content: "SYSTEM BREACHED"; 
+    color: #ffffff; 
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    background: #ff003c;
+    padding: 2px 6px;
+    margin-top: 4px;
+    font-weight: bold;
+    text-shadow: -1px 0 #ff003c, 1px 0 #00f0ff;
+}
+.hacked-link:hover .barcode-decoration {
+    background: #ff003c !important;
+    opacity: 0.9;
+}
+
+.hud-btn:active {
+    transform: scale(0.97);
+    filter: brightness(1.3);
+}
+
+/* --- SYSTEM ARCHIVE CONTAINER --- */
+.bottom-dock { 
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    padding-bottom: 20px; 
+    z-index: 10; 
+}
+
+.tar-archive-btn-mini { 
+    background: transparent !important; 
+    border: none !important;
+    box-shadow: none !important;
+    clip-path: none !important;
+    padding: 8px 18px; 
+    font-size: 0.78rem; 
+    color: #00f0ff; 
+    cursor: pointer; 
+    user-select: none;
+    transition: all 0.2s ease-in-out; 
+    letter-spacing: normal; 
+}
+.tar-archive-btn-mini span { color: #de007a; transition: color 0.2s; }
+
+.tar-archive-btn-mini:hover { 
+    color: #ffcc00 !important;
+    text-shadow: 0 0 8px #ffcc00, 0 0 15px rgba(255, 204, 0, 0.6) !important;
+}
+.tar-archive-btn-mini:hover span {
+    color: #ffcc00 !important;
+    text-shadow: 0 0 8px #ffcc00 !important;
+}
+
+.tar-archive-btn-mini.confirm-window {
+    color: #ff3333 !important;
+    text-shadow: 0 0 8px #ff3333 !important;
+    animation: neon-flicker-fast 0.4s infinite alternate;
+}
+.tar-archive-btn-mini.confirm-window span {
+    color: #ff3333 !important;
+}
+
+.hud-footer { width: 100%; height: 35px; background: #00bb9c; z-index: 10; display: flex; align-items: center; padding: 0 35px; justify-content: space-between; }
+.system-status { font-size: 0.65rem; color: #03030c; font-weight: 900; }
+
+/* --- KEYFRAMES --- */
+@keyframes tech-scan-swipe {
+    0% { left: -100%; }
+    100% { left: 160%; }
+}
+
+@keyframes neon-flicker-slow {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; filter: drop-shadow(0 0 4px #00f0ff); }
+    20%, 24%, 55% { opacity: 0.3; filter: none; }
+}
+
+@keyframes neon-flicker-fast {
+    0%, 79%, 81%, 82%, 86%, 100% { opacity: 1; }
+    80%, 83%, 85% { opacity: 0.4; }
+}
+
+@keyframes pc-boot-turn-on {
+    0% { opacity: 0; filter: brightness(3); }
+    40% { opacity: 0.95; filter: brightness(0.4); }
+    70% { opacity: 0.6; filter: brightness(1.5); }
+    100% { opacity: 1; filter: brightness(1); }
+}
+
+@keyframes layout-glitch-subtle {
+    0% { transform: translate(1px, 0.5px); clip-path: inset(2% 0 4% 0); }
+    20% { transform: translate(-0.5px, -1px); clip-path: inset(0% 0 0% 0); }
+    40% { transform: translate(0px, 1px); clip-path: inset(5% 0 1% 0); }
+    60% { transform: translate(-1px, 0px); clip-path: inset(0% 0 6% 0); }
+    80% { transform: translate(1px, -0.5px); clip-path: inset(1% 0 2% 0); }
+    100% { transform: translate(0px, 0px); clip-path: inset(0% 0 0% 0); }
+}
+
+@keyframes text-glitch-subtle {
+    0% { transform: skewX(-3deg); text-shadow: -1px 0 #ff003c, 1px 0 #00f0ff; }
+    50% { transform: skewX(3deg); text-shadow: 1px 0 #ff003c, -1px 0 #00f0ff; }
+    100% { transform: skewX(0deg); text-shadow: -1px 0 #ff003c, 1px 0 #00f0ff; }
+}
+
+@keyframes micro-analog-jitter {
+    0%, 91%, 95%, 100% { transform: skewX(0deg) scaleY(1); filter: contrast(1); }
+    92% { transform: skewX(0.5deg) translateX(0.5px); filter: brightness(1.03); }
+    93% { transform: skewX(-0.5deg) scaleY(1.005); filter: contrast(1.05); }
+    94% { transform: translateX(-0.5px); filter: brightness(0.97); }
+}
+
+@keyframes rolling-shutter {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 -200%; }
+}
+
+@keyframes text-chromatic-pulse {
+    0% { text-shadow: -0.5px 0 rgba(222, 0, 122, 0.3), 0.5px 0 rgba(0, 240, 255, 0.2); opacity: 0.97; }
+    100% { text-shadow: 0.5px 0 rgba(222, 0, 122, 0.2), -0.5px 0 rgba(0, 240, 255, 0.3); opacity: 1; }
 }
 </style>
 </head>
 <body>
 
-<div class="bio-container">
-    
-    <!-- HEADER PERFIL -->
-    <div class="profile-header">
-        <div class="avatar-wrapper">
-            <img src="Proyecto nuevo (1).jpg" alt="Kyoko Avatar">
-        </div>
-        <div class="username">kyoko.nn</div>
-    </div>
-
-    <!-- TERMINAL COMPACTA DE INICIO -->
-    <div class="intro-terminal">
-        <div id="terminal"></div>
-    </div>
-
-    <!-- CAPA CONECTADA DE ENLACES -->
-    <div class="links-wrapper">
-        
-        <!-- === LA BARRA SE MUESTRA PRIMERO QUE TODO === -->
-        <div class="hud-bar-wrapper" id="dynamic-loader" style="display: none;">
-            <div class="hud-bar-label yellow" id="hud-label">DECRYPTING_SECURE_NODES: 0%</div>
-            <div class="hud-bar-container"><div class="hud-bar-fill" id="hud-fill"></div></div>
-        </div>
-
-        <!-- 1. Spotify (Oculto al inicio) -->
-        <a href="https://open.spotify.com/user/kkf7mp2yfo34l5gfshg4i9vs3?si=7a5c1b5d30a24bdd" target="_blank" class="hud-btn spotify-btn" id="spotify-btn" style="display: none;">
-            <span>SPOTIFY</span>
-            <span class="btn-subtext">PLAYLISTS_TUNED_ACTIVE</span>
-        </a>
-        
-        <!-- 2. Discord (Oculto al inicio) -->
-        <div class="hud-btn discord-btn" id="discord-btn" style="display: none;">
-            <span>DISCORD</span>
-            <span class="btn-subtext" id="discord-sub">COPY_NETWORK_ID</span>
-        </div>
-
-        <!-- 3. Instagram (Oculto al inicio) -->
-        <a href="#" class="hud-btn hacked-link" id="insta-btn" style="display: none;">
-            <span>INSTAGRAM</span>
-            <span class="btn-subtext">NODE_LINK_CORRUPTED</span>
-        </a>
-        
-        <!-- 4. Twitch (Oculto al inicio) -->
-        <a href="#" class="hud-btn hacked-link" id="twitch-btn" style="display: none;">
-            <span>TWITCH</span>
-            <span class="btn-subtext">STREAM_FEED_OFFLINE</span>
-        </a>
-
-        <!-- Carpeta Opcional -->
-        <div class="cyber-folder-item" id="system-folder" style="display: none;">
-            <span class="pink">[ 📁 ]</span> classified_files.tar
+<div class="boot-screen" id="boot-overlay">
+    <div class="loader-container" id="loader-box">
+        <span class="loader-status" id="loader-text">CONNECTING_NODE... 0%</span>
+        <div class="loader-bar-bg">
+            <div class="loader-bar-fill" id="loader-fill"></div>
         </div>
     </div>
+</div>
 
+<div class="stream-frame" id="master-frame">
+
+    <div class="city-backdrop"></div>
+
+    <div class="hud-header">
+        <div class="stream-meta">
+            <div class="meta-title">>> N54_NEWS_FEED</div>
+            <div class="meta-news-feed" id="news-ticker">CONNECTING TO NC_NET...</div>
+        </div>
+        <div class="gameplay-badge">KYOKO CITY</div>
+    </div>
+
+    <div class="main-content-area">
+        <div class="cyber-window-container">
+            
+            <div class="cyber-window-tab">
+                <span>KYOKO.EXE // V.2.06</span>
+                <div class="window-controls">
+                    <div class="window-dot"></div>
+                    <div class="window-dot"></div>
+                </div>
+            </div>
+            
+            <div class="cyber-window-body">
+                <div class="profile-node" style="position: relative;">
+                    <div class="critical-alert-box" id="critical-alert">DANGER</div>
+
+                    <div class="avatar-block">
+                        <div class="avatar-frame">
+                            <img src="kyokoicon.jpg" alt="Kyoko Avatar">
+                        </div>
+                        <div class="bpm-display-box" id="bpm-counter">-- BPM</div>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name">kyoko.nn</span>
+                        <span class="profile-status">// USER_DATA</span>
+                    </div>
+                    
+                    <div class="ecg-container">
+                        <canvas id="ecgCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="networks-menu">
+                    <div class="hud-btn spotify-btn secure-link" id="spotify-link">
+                        <div class="btn-glow-container"></div>
+                        <div class="hud-btn-scanner"></div>
+                        <div class="corner-bracket bracket-tl"></div>
+                        <div class="corner-bracket bracket-br"></div>
+                        <div class="btn-core-data">
+                            <span>SPOTIFY</span>
+                            <span class="btn-sub">AUDIO_STREAM // CH_01</span>
+                        </div>
+                        <div class="tech-meta-display">
+                            <div class="barcode-decoration"></div>
+                            <div class="tech-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="hud-btn discord-btn secure-link" id="discord-btn">
+                        <div class="btn-glow-container"></div>
+                        <div class="hud-btn-scanner"></div>
+                        <div class="corner-bracket bracket-tl"></div>
+                        <div class="corner-bracket bracket-br"></div>
+                        <div class="btn-core-data">
+                            <span>DISCORD</span>
+                            <span class="btn-sub" id="discord-sub">COPY_NETWORK_ID // SECURE</span>
+                        </div>
+                        <div class="tech-meta-display">
+                            <div class="barcode-decoration"></div>
+                            <div class="tech-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="hud-btn twitch-btn hacked-link">
+                        <div class="btn-glow-container"></div>
+                        <div class="corner-bracket bracket-tl"></div>
+                        <div class="corner-bracket bracket-br"></div>
+                        <div class="btn-core-data">
+                            <span>TWITCH</span>
+                            <span class="btn-sub">LIVE_BROADCAST // CH_54</span>
+                        </div>
+                        <div class="tech-meta-display">
+                            <div class="barcode-decoration"></div>
+                            <div class="tech-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="hud-btn instagram-btn hacked-link">
+                        <div class="btn-glow-container"></div>
+                        <div class="corner-bracket bracket-tl"></div>
+                        <div class="corner-bracket bracket-br"></div>
+                        <div class="btn-core-data">
+                            <span>INSTAGRAM</span>
+                            <span class="btn-sub">PHOTO_FEED // NET_LINK</span>
+                        </div>
+                        <div class="tech-meta-display">
+                            <div class="barcode-decoration"></div>
+                            <div class="tech-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="squad-dock-container" id="squad-container">
+                <div class="squad-vertical-tab" id="squad-toggle-tab">
+                    SQUAD
+                </div>
+                
+                <div class="cyberpunk-contacts-panel" id="contacts-panel">
+                    <div class="panel-tag">>> SQUAD_COMM_LINK</div>
+                    
+                    <div class="squad-calling-overlay" id="calling-overlay">
+                        <div class="analog-signal-noise"></div>
+                        <div class="pixel-msg-icon"></div>
+                        <div class="calling-text">CONNECTING_TO_SQUAD...</div>
+                    </div>
+
+                    <div class="contacts-list">
+                        <div class="contact-card">
+                            <div class="contact-avatar-wrapper">
+                                <img src="tetoicon.jpg" class="contact-avatar" alt="GILAD">
+                            </div>
+                            <div class="contact-info">
+                                <span class="contact-name">GILAD</span>
+                                <span class="contact-status">@graves_iladrill</span>
+                            </div>
+                        </div>
+
+                        <div class="contact-card">
+                            <div class="contact-avatar-wrapper">
+                                <img src="margoticon.jpg" class="contact-avatar" alt="Margot">
+                            </div>
+                            <div class="contact-info">
+                                <span class="contact-name">Margot</span>
+                                <span class="contact-status">@yiyihaircut</span>
+                            </div>
+                        </div>
+
+                        <div class="contact-card">
+                            <div class="contact-avatar-wrapper">
+                                <img src="mimiicon.jpg" class="contact-avatar" alt="Mimi">
+                            </div>
+                            <div class="contact-info">
+                                <span class="contact-name">Mimi⭑</span>
+                                <span class="contact-status">@mimi_jx</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+
+    <div class="bottom-dock">
+        <div class="tar-archive-btn-mini" id="system-folder">
+            <span>[ 📁 ]</span> classified_files
+        </div>
+    </div>
+
+    <div class="hud-footer">
+        <div class="system-status">// RUNNING // NODE_81-NV</div>
+    </div>
 </div>
 
 <script>
-const terminal = document.getElementById('terminal');
-const loaderWrapper = document.getElementById('dynamic-loader');
-const hudLabel = document.getElementById('hud-label');
-const hudFill = document.getElementById('hud-fill');
+const loaderFill = document.getElementById('loader-fill');
+const loaderText = document.getElementById('loader-text');
+const bootOverlay = document.getElementById('boot-overlay');
+const frame = document.getElementById('master-frame');
+const newsTicker = document.getElementById('news-ticker');
 
-const spotifyBtn = document.getElementById('spotify-btn');
-const discordBtn = document.getElementById('discord-btn');
-const instaBtn = document.getElementById('insta-btn');
-const twitchBtn = document.getElementById('twitch-btn');
-const systemFolder = document.getElementById('system-folder');
+const squadContainer = document.getElementById('squad-container');
+const contactsPanel = document.getElementById('contacts-panel');
+const squadToggleTab = document.getElementById('squad-toggle-tab');
+let callTimeout = null;
 
-const wait = ms => new Promise(res => setTimeout(res, ms));
+squadToggleTab.addEventListener('click', (e) => {
+    const isExpanding = !squadContainer.classList.contains('panel-expanded');
+    
+    squadContainer.classList.toggle('panel-expanded');
+    squadToggleTab.classList.toggle('tab-active');
+    
+    for(let k = 0; k < 6; k++) spawnPhysicalParticle(e.clientX, e.clientY);
 
-function typeLine(text, parentElement, speed = 15) {
+    if (isExpanding) {
+        clearTimeout(callTimeout);
+        contactsPanel.classList.remove('load-complete');
+        contactsPanel.classList.add('is-calling');
+        
+        callTimeout = setTimeout(() => {
+            contactsPanel.classList.remove('is-calling');
+            contactsPanel.classList.add('load-complete');
+        }, 2500); 
+    } else {
+        clearTimeout(callTimeout);
+        contactsPanel.classList.remove('is-calling');
+        contactsPanel.classList.remove('load-complete');
+    }
+});
+
+const cityNews = ["ALERT: DATA BREACH", "NCPD TRACKING KYOKO_NN", "CYBERATTACK IN PROGRESS"];
+function startNewsTicker() {
+    let index = 0;
+    setInterval(() => {
+        index = (index + 1) % cityNews.length;
+        newsTicker.innerText = cityNews[index];
+    }, 4000);
+}
+
+function runLoader() {
     return new Promise((resolve) => {
-        let index = 0; const textNode = document.createElement('span'); const cursorNode = document.createElement('span');
-        cursorNode.className = 'cursor'; cursorNode.innerHTML = '█';
-        parentElement.appendChild(textNode); parentElement.appendChild(cursorNode);
-        function write() {
-            if (index < text.length) {
-                textNode.innerHTML += text.charAt(index); index++; setTimeout(write, speed);
-            } else { cursorNode.remove(); resolve(); }
+        let progress = 0;
+        function step() {
+            progress += Math.floor(Math.random() * 5) + 1;
+            if (progress > 100) progress = 100;
+            loaderFill.style.width = `${progress}%`;
+            loaderText.innerText = `CONNECTING_NODE... ${progress}%`;
+            if (progress < 100) setTimeout(step, 20);
+            else resolve();
         }
-        write();
+        step();
     });
 }
-
-// SECUENCIA CORREGIDA DE CARGA COMPLETA
-async function runBioSequence() {
-    // 1. CARGA DE TEXTOS DE DIAGNÓSTICO
-    const l1 = document.createElement('div'); l1.innerHTML = '<span class="pink">[ SYS ]</span> '; terminal.appendChild(l1);
-    await typeLine('initializing bio_OS protocols...', l1);
-    await wait(200);
-    
-    const l2 = document.createElement('div'); l2.innerHTML = '<span class="pink">[ NET ]</span> '; terminal.appendChild(l2);
-    await typeLine('establishing sync... <span class="green">READY</span>', l2);
-    await wait(300);
-
-    // 2. APARECE LA BARRA SOLA EN EL MEDIO Y EMPIEZA A CARGAR
-    loaderWrapper.style.display = 'block';
-    for (let p = 0; p <= 100; p += 5) {
-        hudFill.style.width = `${p}%`;
-        hudLabel.innerText = `DECRYPTING_SECURE_NODES: ${p}%`;
-        await wait(25);
-    }
-    
-    hudLabel.className = 'hud-bar-label green';
-    hudLabel.innerText = `NODES_DECRYPTED // ACCESS_OK`;
-    await wait(300);
-
-    // 3. EFECTO HACKEO: Animación destructiva para borrar la barra
-    loaderWrapper.classList.add('glitch-fadeout');
-    await wait(350);
-    loaderWrapper.remove(); // Se elimina del flujo visual
-
-    // 4. REVELACIÓN SIMULTÁNEA DE TODAS LAS REDES CON EL ORDEN ASIGNADO
-    spotifyBtn.style.display = 'flex';
-    discordBtn.style.display = 'flex';
-    instaBtn.style.display = 'flex';
-    twitchBtn.style.display = 'flex';
-    systemFolder.style.display = 'flex';
-
-    setupInteractions();
-}
-
-/* --- ENGINE DE PARTÍCULAS --- */
-let activeParticles = [];
-const cyberGlitches = ['█', '■', '01', 'ERR', '░', '§'];
 
 function spawnPhysicalParticle(x, y, isClick = false) {
-    const particle = document.createElement('span');
-    particle.className = 'glitch-particle';
-    particle.innerText = cyberGlitches[Math.floor(Math.random() * cyberGlitches.length)];
-    if(isClick) {
-        particle.style.textShadow = '0 0 8px #ff003c';
+    const p = document.createElement('div');
+    p.classList.add('glitch-particle');
+    const chars = ['█', '■', '01', 'ERR'];
+    p.innerText = chars[Math.floor(Math.random() * chars.length)];
+    p.style.color = '#de007a';
+    p.style.left = `${x}px`;
+    p.style.top = `${y}px`;
+    document.body.appendChild(p);
+    
+    let speedX = (Math.random() - 0.5) * (isClick ? 7 : 3);
+    let speedY = (Math.random() - 0.5) * (isClick ? 7 : 3);
+    let opacity = 1;
+    
+    function update() {
+        x += speedX; y += speedY; opacity -= 0.03;
+        p.style.left = `${x}px`; p.style.top = `${y}px`; p.style.opacity = opacity;
+        if (opacity > 0) requestAnimationFrame(update);
+        else p.remove();
+    }
+    requestAnimationFrame(update);
+}
+
+function initDynamicGlitch() {
+    setInterval(() => {
+        if (Math.random() > 0.95) {
+            frame.style.setProperty('--glitch-br', `${(Math.random() * 0.3 + 0.85).toFixed(2)}`);
+            setTimeout(() => { frame.style.setProperty('--glitch-br', '1'); }, 50);
+        }
+    }, 500);
+}
+
+/* --- GENERADOR DINÁMICO DE RITMO CARDÍACO AJUSTADO --- */
+function initECG() {
+    const canvas = document.getElementById('ecgCanvas');
+    const ctx = canvas.getContext('2d');
+    const bpmCounter = document.getElementById('bpm-counter');
+    const criticalAlert = document.getElementById('critical-alert');
+    
+    canvas.width = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+
+    let points = [];
+    let currentBpm = 72;
+    let targetBpm = 72;
+    let timeSinceLastBeat = 0;
+
+    setInterval(() => {
+        const r = Math.random();
+        if (r < 0.75) {
+            targetBpm = Math.floor(Math.random() * (78 - 62) + 62); 
+        } else if (r < 0.90) {
+            targetBpm = Math.floor(Math.random() * (95 - 82) + 82);   
+        } else {
+            targetBpm = Math.floor(Math.random() * (125 - 105) + 105); 
+        }
+    }, 5000);
+
+    function getBeatArray(bpm) {
+        const isHigh = bpm >= 100;
+        const isMed = bpm >= 82 && bpm < 100;
+
+        const pHeight = isHigh ? 8 : (isMed ? 6 : 4);
+        const qHeight = isHigh ? -6 : -4;
+        const rHeight = isHigh ? 27 : (isMed ? 24 : 20);
+        const sHeight = isHigh ? -11 : -7;
+        const tHeight = isHigh ? 8 : 5;
+
+        return [
+            { dx: 0, dy: 0 },
+            { dx: 4, dy: -pHeight }, 
+            { dx: 4, dy: 0 },
+            { dx: 2, dy: -qHeight }, 
+            { dx: 3, dy: rHeight },  
+            { dx: 3, dy: sHeight },  
+            { dx: 2, dy: 0 },
+            { dx: 5, dy: -tHeight }, 
+            { dx: 4, dy: 0 }
+        ];
+    }
+
+    function getEcgColor(bpm) {
+        if (bpm <= 82) {
+            return `rgb(0, 187, 156)`;
+        } else if (bpm < 100) {
+            let factor = (bpm - 82) / (100 - 82);
+            factor = Math.max(0, Math.min(1, factor));
+            
+            let r = Math.round(0 + (factor * 255));
+            let g = Math.round(187 + (factor * 33)); 
+            let b = Math.round(156 - (factor * 116)); 
+            return `rgb(${r}, ${g}, ${b})`;
+        } else {
+            return `rgb(255, 0, 60)`;
+        }
+    }
+
+    let activeBeatPoints = [];
+    let beatProgressIndex = 0;
+
+    function animateECG() {
+        currentBpm += (targetBpm - currentBpm) * 0.015;
+        bpmCounter.innerText = `${Math.round(currentBpm)} BPM`;
+
+        const pulseColor = getEcgColor(currentBpm);
+        bpmCounter.style.color = pulseColor;
+        bpmCounter.style.borderColor = pulseColor;
+        bpmCounter.style.boxShadow = `0 0 5px ${pulseColor}`;
+
+        if (currentBpm >= 100) {
+            criticalAlert.classList.add('active');
+        } else {
+            criticalAlert.classList.remove('active');
+        }
+
+        const speed = currentBpm > 100 ? 2.3 : currentBpm < 62 ? 1.4 : 1.7;
+        const beatInterval = (60 / currentBpm) * 60; 
+
+        timeSinceLastBeat += speed;
+        let currentYOffset = 0;
+
+        if (activeBeatPoints.length === 0 && timeSinceLastBeat >= beatInterval) {
+            activeBeatPoints = getBeatArray(currentBpm);
+            beatProgressIndex = 0;
+            timeSinceLastBeat = 0;
+        }
+
+        if (activeBeatPoints.length > 0) {
+            const node = activeBeatPoints[beatProgressIndex];
+            currentYOffset = node.dy;
+            node.dx -= speed;
+            if (node.dx <= 0) {
+                beatProgressIndex++;
+                if (beatProgressIndex >= activeBeatPoints.length) {
+                    activeBeatPoints = [];
+                }
+            }
+        }
+
+        const midY = canvas.height / 2;
+        points.push({ x: canvas.width, y: midY - currentYOffset });
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.beginPath();
+        ctx.strokeStyle = pulseColor;
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = pulseColor;
+
+        for (let i = 0; i < points.length; i++) {
+            points[i].x -= speed; 
+            if (i === 0) {
+                ctx.moveTo(points[i].x, points[i].y);
+            } else {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+        }
+        ctx.stroke();
+
+        if (points.length > 0 && points[0].x < 0) {
+            points.shift();
+        }
+
+        requestAnimationFrame(animateECG);
+    }
+    animateECG();
+}
+
+async function runMasterSequence() {
+    await runLoader();
+    setTimeout(() => {
+        bootOverlay.remove();
+        frame.classList.add('pc-active');
+        initDynamicGlitch();
+        startNewsTicker();
+        initECG(); 
+    }, 200);
+}
+
+// SPOTIFY BUTTON FUNCTIONALITY
+const spotifyBtn = document.getElementById('spotify-link');
+let isSpotifyLoading = false;
+
+spotifyBtn.addEventListener('click', () => {
+    if (isSpotifyLoading) return; 
+    
+    isSpotifyLoading = true;
+    spotifyBtn.classList.add('fetching-state');
+    
+    setTimeout(() => {
+        window.open('https://open.spotify.com/user/kkf7mp2yfo34l5gfshg4i9vs3', '_blank');
+        spotifyBtn.classList.remove('fetching-state');
+        isSpotifyLoading = false;
+    }, 1000); 
+});
+
+// DISCORD ID COPY FUNCTIONALITY
+const discordBtn = document.getElementById('discord-btn');
+discordBtn.addEventListener('click', async () => {
+    await navigator.clipboard.writeText('kyoko.nn');
+    discordBtn.classList.add('copied-state');
+    setTimeout(() => { 
+        discordBtn.classList.remove('copied-state'); 
+    }, 1500);
+});
+
+// CLASSIFIED FOLDER INTERACTION
+const systemFolder = document.getElementById('system-folder');
+let confirmationActive = false;
+let confirmationTimer = null;
+
+systemFolder.addEventListener('click', () => {
+    if (!confirmationActive) {
+        confirmationActive = true;
+        systemFolder.classList.add('confirm-window');
+        systemFolder.innerHTML = `<span>[ ⚠️ ]</span> ARE YOU SURE?`;
+
+        confirmationTimer = setTimeout(() => {
+            resetFolderState();
+        }, 3000);
     } else {
-        particle.style.fontSize = '0.55rem';
-        particle.style.opacity = '0.6';
+        clearTimeout(confirmationTimer);
+        window.open('https://youtu.be/dQw4w9WgXcQ?si=Orwn3aAxyV_3JB3G', '_blank');
+        resetFolderState();
     }
-    document.body.appendChild(particle);
+});
 
-    let vx = isClick ? (Math.random() - 0.5) * 5 : (Math.random() - 0.5) * 2;
-    let vy = isClick ? (Math.random() - 0.5) * 5 : -(Math.random() * 1.2 + 0.8);
-    let gravity = isClick ? 0.12 : -0.01;
-    const lifespan = 450;
-    const startTime = performance.now();
-
-    activeParticles.push({ element: particle, x: x, y: y, vx: vx, vy: vy, gravity: gravity, startTime: startTime, lifespan: lifespan });
+function resetFolderState() {
+    confirmationActive = false;
+    systemFolder.classList.remove('confirm-window');
+    systemFolder.innerHTML = `<span>[ 📁 ]</span> classified_files`;
 }
 
-function updateParticles(timestamp) {
-    for (let i = activeParticles.length - 1; i >= 0; i--) {
-        let p = activeParticles[i]; let elapsed = timestamp - p.startTime;
-        if (elapsed >= p.lifespan) { p.element.remove(); activeParticles.splice(i, 1); continue; }
-        p.vy += p.gravity; p.x += p.vx; p.y += p.vy;
-        p.element.style.left = `${p.x}px`; p.element.style.top = `${p.y}px`;
-        p.element.style.opacity = 1 - (elapsed / p.lifespan);
-    }
-    requestAnimationFrame(updateParticles);
-}
-requestAnimationFrame(updateParticles);
-
-function setupInteractions() {
-    // Configuración Copiar Discord
-    const discordSub = document.getElementById('discord-sub');
-    discordBtn.addEventListener('click', async () => {
-        try {
-            await navigator.clipboard.writeText('kyoko.nn');
-            discordBtn.classList.add('copied-state');
-            discordBtn.querySelector('span').innerText = '[ COPIED! ]';
-            discordSub.innerText = 'USER_ID_SAVED_TO_CLIPBOARD';
-            setTimeout(() => {
-                discordBtn.classList.remove('copied-state');
-                discordBtn.querySelector('span').innerText = 'DISCORD';
-                discordSub.innerText = 'COPY_NETWORK_ID';
-            }, 1300);
-        } catch (err) { console.error(err); }
+const hackedLinks = document.querySelectorAll('.hacked-link');
+hackedLinks.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        for(let k = 0; k < 10; k++) spawnPhysicalParticle(e.clientX, e.clientY, true);
     });
+});
 
-    // Partículas interactivas en botones inestables (Instagram y Twitch)
-    const hackedLinks = document.querySelectorAll('.hacked-link');
-    hackedLinks.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            for(let k=0; k<12; k++) spawnPhysicalParticle(e.clientX, e.clientY, true);
-        });
-        btn.addEventListener('mousemove', (e) => {
-            if(Math.random() > 0.78) spawnPhysicalParticle(e.clientX, e.clientY, false);
-        });
-    });
-
-    // Carpeta secreta Easter Egg
-    const folder = document.getElementById('system-folder');
-    folder.addEventListener('click', (e) => { e.stopPropagation(); folder.classList.add('selected'); });
-    document.addEventListener('click', () => { folder.classList.remove('selected'); });
-    folder.addEventListener('dblclick', () => { window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank'); });
-}
-
-runBioSequence();
+runMasterSequence();
 </script>
 
 </body>
